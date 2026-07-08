@@ -1,20 +1,30 @@
+def pedir_entero(mensaje):
+    """Pide un numero entero y no continua hasta que sea valido."""
+    while True:
+        entrada = input(mensaje)
+        try:
+            return int(entrada)
+        except ValueError:
+            print("Tenes que ingresar un numero entero valido.")
+
+
 def registrar_socio(socios, siguiente_id):
     """Pide los datos de un socio nuevo y lo agrega a la lista."""
     nombre = input("Nombre: ")
     if nombre == "":
         print("El nombre no puede estar vacio.")
-        return siguiente_id
+        # NOTA: aca esta el bug de esta etapa, ver mas abajo
+        return siguiente_id + 1
 
-    # Correccion: usamos .strip() para sacar espacios de mas
     dni = input("DNI: ").strip()
     if dni == "":
         print("El DNI no puede estar vacio.")
-        return siguiente_id
+        return siguiente_id + 1
 
     for socio in socios:
         if socio["dni"] == dni:
             print("Ya existe un socio con ese DNI. No se registro.")
-            return siguiente_id
+            return siguiente_id + 1
 
     socio = {"id": siguiente_id, "nombre": nombre, "dni": dni}
     socios.append(socio)
@@ -43,8 +53,8 @@ def listar_socios(socios):
 
 def buscar_socio(socios):
     """Pide un ID y muestra el socio encontrado."""
-    # NOTA: aca esta el bug de esta etapa (input() sin convertir a int)
-    id_socio = input("ID del socio a buscar: ")
+    # Correccion de la etapa 3: ahora usamos pedir_entero, que convierte a int
+    id_socio = pedir_entero("ID del socio a buscar: ")
     socio = buscar_socio_por_id(socios, id_socio)
     if socio is None:
         print("No se encontro ningun socio con ese ID.")
@@ -62,13 +72,7 @@ def main():
         print("2. Ver socios")
         print("3. Buscar socio por ID")
         print("4. Salir")
-        opcion = input("Elegi una opcion: ")
-
-        if opcion not in ("1", "2", "3", "4"):
-            print("Opcion invalida.")
-            continue
-
-        opcion = int(opcion)
+        opcion = pedir_entero("Elegi una opcion: ")
 
         if opcion == 1:
             siguiente_id = registrar_socio(socios, siguiente_id)
@@ -79,6 +83,8 @@ def main():
         elif opcion == 4:
             print("Chau!")
             break
+        else:
+            print("Opcion invalida.")
 
 
 main()
